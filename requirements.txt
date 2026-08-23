@@ -1,0 +1,16 @@
+# CodeGuru Backend Dependencies
+# Install with: pip install -r requirements.txt
+
+fastapi
+uvicorn
+httpx
+python-dotenv
+python-multipart
+
+# Database
+sqlalchemy
+
+# Auth
+bcrypt
+python-jose[cryptography]
+email-validator

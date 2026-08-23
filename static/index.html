@@ -1,0 +1,3276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeGuru — AI Coding Teacher for Indian Students</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #18181f;
+      --surface3: #22222c;
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.12);
+      --accent: #7c6aff;
+      --accent2: #a78bfa;
+      --accent-glow: rgba(124, 106, 255, 0.3);
+      --green: #22d3a0;
+      --amber: #f59e0b;
+      --red: #f87171;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      --text: #e8e8f0;
+      --text2: #a0a0b8;
+      --text3: #6a6a8a;
+      --mono: 'Geist Mono', 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+      --header: 'Geist', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ── ANIMATED BACKGROUND ── */
+    .bg-blobs {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      filter: blur(80px);
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      animation: float 20s infinite alternate;
+    }
+
+    .blob-1 {
+      top: -100px;
+      left: -100px;
+      background: radial-gradient(circle, #4f46e5 0%, transparent 70%);
+    }
+
+    .blob-2 {
+      bottom: -100px;
+      right: -100px;
+      background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+      animation-delay: -5s;
+    }
+
+    .blob-3 {
+      top: 40%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, #1e1b4b 0%, transparent 70%);
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(100px, 50px) scale(1.1);
+      }
+    }
+
+    /* ── PAGES ── */
+    .page {
+      display: none;
+      min-height: 100vh;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .page.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── NAV ── */
+    nav:not(.sidebar-nav) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.18s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      background: #6b58f0;
+      box-shadow: 0 0 32px rgba(124, 106, 255, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #0a0a0f;
+      font-weight: 700;
+    }
+
+    .btn-green:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    .btn-lg {
+      padding: 13px 28px;
+      font-size: 15px;
+      border-radius: 10px;
+    }
+
+    /* ── LANDING ── */
+    #landing {
+      position: relative;
+    }
+
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 40px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 39px, var(--border) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, var(--border) 40px);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent2);
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(1.3);
+      }
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      max-width: 780px;
+      position: relative;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    h1 .hl {
+      color: var(--green);
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text2);
+      max-width: 500px;
+      margin: 20px auto 40px;
+      font-weight: 400;
+      line-height: 1.65;
+      font-family: var(--mono);
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+
+    .lang-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+
+    .lang-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 99px;
+      padding: 5px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .lang-pill.active {
+      background: var(--green-dim);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .demo-window {
+      width: 100%;
+      max-width: 800px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      overflow: hidden;
+      text-align: left;
+      position: relative;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border);
+    }
+
+    .demo-bar {
+      background: var(--surface2);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-r {
+      background: #ff5f57;
+    }
+
+    .dot-y {
+      background: #febc2e;
+    }
+
+    .dot-g {
+      background: #28c840;
+    }
+
+    .demo-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 220px;
+    }
+
+    .demo-code {
+      padding: 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.8;
+      border-right: 1px solid var(--border);
+    }
+
+    .demo-chat {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .kw {
+      color: #c084fc;
+    }
+
+    .fn {
+      color: #86efac;
+    }
+
+    .str {
+      color: #fde68a;
+    }
+
+    .err {
+      color: var(--red);
+      text-decoration: underline wavy;
+    }
+
+    .chat-ai {
+      background: var(--surface3);
+      border-radius: 4px 12px 12px 12px;
+      padding: 10px 13px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .chat-ai .who {
+      font-size: 10px;
+      color: var(--accent2);
+      font-family: var(--mono);
+      margin-bottom: 5px;
+    }
+
+    .chat-user {
+      background: var(--accent-glow);
+      border: 1px solid rgba(124, 106, 255, 0.2);
+      border-radius: 12px 4px 12px 12px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text2);
+      margin-left: auto;
+      max-width: 80%;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      position: relative;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: inline-block;
+      background: rgba(124, 106, 255, 0.1);
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 1px solid rgba(124, 106, 255, 0.2);
+    }
+
+    .section-title {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 60px;
+      line-height: 1.1;
+    }
+
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .feat-card {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 36px;
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feat-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 24px 48px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(124, 106, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .feat-card:hover::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+      transform: skewX(-20deg);
+      animation: shimmer 0.7s forwards;
+      pointer-events: none;
+    }
+
+    @keyframes shimmer {
+      100% {
+        left: 200%;
+      }
+    }
+
+    .feat-icon {
+      font-size: 28px;
+      margin-bottom: 24px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .feat-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .feat-card p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.7;
+      font-family: var(--mono);
+      flex-grow: 1;
+      margin-bottom: 8px;
+    }
+
+    .feat-tag {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      margin-top: 16px;
+      background: rgba(34, 211, 160, 0.1);
+      border: 1px solid rgba(34, 211, 160, 0.25);
+      color: var(--green);
+      font-weight: 600;
+      box-shadow: 0 0 12px rgba(34, 211, 160, 0.15);
+    }
+
+    /* ── LOGIN ── */
+    #login {
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.5);
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo .logo {
+      font-size: 22px;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .auth-tab {
+      padding: 9px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.18s;
+      color: var(--text2);
+    }
+
+    .auth-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 6px;
+      font-family: var(--mono);
+      letter-spacing: 0.05em;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    select option {
+      background: var(--surface2);
+    }
+
+    .auth-divider {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text3);
+      font-family: var(--mono);
+      margin: 20px 0;
+    }
+
+    .auth-footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 20px;
+      font-family: var(--mono);
+    }
+
+    .auth-footer span {
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .auth-footer span:hover {
+      text-decoration: underline;
+    }
+
+    /* ── TOP NAV ── */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 64px;
+      background: rgba(10, 10, 15, 0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    /* ── PROFILE & DROPDOWN ── */
+    .profile-container {
+      position: relative;
+    }
+
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 99px;
+      transition: all 0.2s;
+    }
+
+    .profile-trigger:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 10px;
+      width: 260px;
+      background: rgba(15, 17, 26, 0.95);
+      backdrop-filter: blur(32px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      display: none;
+      padding: 12px 0;
+      z-index: 1001;
+      animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .profile-dropdown.show {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-header {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dropdown-header .user-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .dropdown-header .user-meta {
+      font-size: 12px;
+      color: var(--text3);
+      font-family: var(--mono);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 10px 20px;
+      font-size: 13px;
+      color: var(--text2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(124, 106, 255, 0.1);
+      color: var(--text);
+    }
+
+
+    /* ── APP SHELL ── */
+    .app-container {
+      display: flex;
+      padding-top: 64px;
+      height: 100vh;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: rgba(13, 13, 20, 0.5);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 14px;
+      gap: 6px;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      transform: translateX(4px);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-item.active {
+      background: rgba(124, 106, 255, 0.12);
+      color: var(--accent);
+      font-weight: 600;
+      border-color: rgba(124, 106, 255, 0.25);
+      box-shadow: 0 4px 15px rgba(124, 106, 255, 0.1);
+    }
+
+    .nav-icon {
+      font-size: 17px;
+      opacity: 0.8;
+      width: 22px;
+      text-align: center;
+    }
+
+    .nav-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dropdown-menu {
+      display: none;
+      flex-direction: column;
+      padding-left: 48px;
+      margin: 4px 0 12px;
+      gap: 2px;
+    }
+
+    .nav-group.open .dropdown-menu {
+      display: flex;
+    }
+
+    .nav-group.open .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-arrow {
+      font-size: 8px;
+      opacity: 0.4;
+      transition: transform 0.3s;
+      margin-right: 4px;
+    }
+
+    .sub-item {
+      padding: 8px 0;
+      font-size: 13px;
+      color: var(--text3);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 400;
+    }
+
+    .sub-item:hover {
+      color: var(--accent);
+      padding-left: 4px;
+    }
+
+
+    .page-container {
+      flex: 1;
+      overflow-y: auto;
+      background: transparent;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+
+    /* ── DASHBOARD ── */
+    .dash-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 40px;
+      padding: 60px;
+      max-width: 1700px;
+      margin: 0 auto;
+    }
+
+    .dash-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
+      border: 1px solid var(--glass-border);
+      border-radius: 32px;
+      padding: 48px;
+      transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dash-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(124, 106, 255, 0.06), transparent 40%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .dash-card:hover::after {
+      opacity: 1;
+    }
+
+    .dash-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-10px) scale(1.01);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.6);
+    }
+
+
+    .profile-card {
+      text-align: center;
+    }
+
+    .avatar.large {
+      width: 120px;
+      height: 120px;
+      font-size: 48px;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 50px var(--accent-glow);
+      border: 4px solid var(--bg);
+    }
+
+    .profile-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    .p-stat-val {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      font-family: var(--mono);
+    }
+
+    .p-stat-label {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 8px;
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .dash-greeting h2 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .lc-stats {
+      display: flex;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .lc-ring-container {
+      position: relative;
+      width: 160px;
+      height: 160px;
+    }
+
+    .lc-ring {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(var(--green) 0% 45%, var(--amber) 45% 80%, var(--red) 80% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .lc-ring-inner {
+      width: 136px;
+      height: 136px;
+      border-radius: 50%;
+      background: #0c0c14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .lc-ring-val {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -1px;
+    }
+
+    .lc-ring-label {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: -2px;
+    }
+
+    .lc-bars {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .lc-bar-track {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .lc-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lc-heatmap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 24px;
+      color: var(--text2);
+    }
+
+    .lc-heatmap-container {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      scrollbar-width: none;
+    }
+
+    .lc-month-block {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lc-month-label {
+      font-size: 10px;
+      font-family: var(--mono);
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .lc-month-grid {
+      display: grid;
+      grid-template-rows: repeat(7, 1fr);
+      grid-auto-flow: column;
+      gap: 5px;
+    }
+
+    .lc-cell {
+      width: 13px;
+      height: 13px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.01);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lc-cell:hover {
+      transform: scale(1.3);
+      z-index: 10;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .lc-cell.l1 {
+      background: #1e1b4b;
+      border-color: #312e81;
+    }
+
+    .lc-cell.l2 {
+      background: #3730a3;
+      border-color: #4338ca;
+    }
+
+    .lc-cell.l3 {
+      background: #4f46e5;
+      border-color: #6366f1;
+    }
+
+    .lc-cell.l4 {
+      background: var(--accent);
+      border-color: var(--accent2);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    /* ── DASHBOARD SUB-ELEMENTS ── */
+    .lc-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+    }
+
+    .lc-badge.gold {
+      background: rgba(255, 215, 0, 0.1);
+      border-color: rgba(255, 215, 0, 0.3);
+    }
+
+    .lc-badge.silver {
+      background: rgba(192, 192, 192, 0.1);
+      border-color: rgba(192, 192, 192, 0.3);
+    }
+
+    .viz-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(32px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      transition: all 0.4s;
+    }
+
+    .viz-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .viz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .viz-header span {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+    .lc-badges {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .lc-badges-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text2);
+      font-family: var(--mono);
+    }
+
+    .lc-badge-list {
+      display: flex;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .lc-badge {
+      width: 56px;
+      height: 64px;
+      background: rgba(124, 106, 255, 0.1);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border: 1px solid rgba(124, 106, 255, 0.3);
+    }
+
+    /* ── EDITOR ── */
+    #editor {
+      flex-direction: row;
+    }
+
+    .editor-sidebar {
+      width: 64px;
+      background: rgba(13, 13, 20, 0.5);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .ed-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--text3);
+      border: 1px solid transparent;
+      background: transparent;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .ed-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .ed-btn.active {
+      background: rgba(124, 106, 255, 0.12);
+      color: var(--accent);
+      border-color: rgba(124, 106, 255, 0.2);
+      box-shadow: 0 4px 15px rgba(124, 106, 255, 0.1);
+    }
+
+    .editor-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #08080c;
+    }
+
+    .editor-topbar {
+      background: rgba(17, 17, 24, 0.4);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .file-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .file-tab:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+    }
+
+    .file-tab.active {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(124, 106, 255, 0.08);
+      box-shadow: 0 0 15px rgba(124, 106, 255, 0.1);
+    }
+
+    .lang-select {
+      margin-left: auto;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .lang-select:hover {
+      border-color: var(--accent2);
+    }
+
+    .lang-select:focus {
+      border-color: var(--accent);
+    }
+
+    .editor-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      overflow: hidden;
+    }
+
+    .code-panel {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+
+    .code-area-wrap {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .line-nums {
+      padding: 16px 12px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text3);
+      text-align: right;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      user-select: none;
+      min-width: 44px;
+    }
+
+    .code-input {
+      flex: 1;
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      background: var(--bg);
+      color: var(--text);
+      border: none;
+      outline: none;
+      resize: none;
+      tab-size: 2;
+    }
+
+    .error-bar {
+      background: rgba(248, 113, 113, 0.08);
+      border-top: 1px solid rgba(248, 113, 113, 0.2);
+      padding: 10px 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--red);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .editor-actions {
+      padding: 12px 16px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .run-btn {
+      background: var(--green);
+      color: #0a0a0f;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 7px 16px;
+      border-radius: 7px;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .run-btn:hover {
+      opacity: 0.9;
+    }
+
+    .lang-mode {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mode-pill {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      color: var(--text3);
+      background: transparent;
+      transition: all 0.15s;
+    }
+
+    .mode-pill.active {
+      background: rgba(124, 106, 255, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .ai-panel {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+    }
+
+    .ai-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ai-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .ai-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    .lang-switch {
+      display: flex;
+      gap: 4px;
+    }
+
+    .lsw {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 99px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      color: var(--text3);
+      background: transparent;
+      transition: all 0.15s;
+    }
+
+    .lsw.active {
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--green-dim);
+    }
+
+    .ai-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .msg-ai {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .msg-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .msg-bubble {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px 16px 16px 16px;
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+      max-width: 90%;
+      backdrop-filter: blur(8px);
+    }
+
+    .ai-status.thinking {
+      background: var(--accent);
+      animation: thinkingPulse 1.5s infinite;
+    }
+
+    @keyframes thinkingPulse {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(1.3);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .msg-user {
+      flex-direction: row-reverse;
+    }
+
+    .msg-user .msg-bubble {
+      background: rgba(124, 106, 255, 0.12);
+      border-color: rgba(124, 106, 255, 0.3);
+      border-radius: 16px 4px 16px 16px;
+      color: var(--text);
+    }
+
+    .code-snippet {
+      background: #000;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      margin-top: 10px;
+      color: var(--green);
+      border: 1px solid var(--border);
+    }
+
+    .ai-input-wrap {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+    }
+
+    .ai-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .ai-input:focus {
+      border-color: var(--accent);
+    }
+
+    .send-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send-btn:hover {
+      background: #6b58f0;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface3);
+      border-radius: 99px;
+    }
+
+    /* animations */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero>* {
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .hero>*:nth-child(1) {
+      animation-delay: 0.05s
+    }
+
+    .hero>*:nth-child(2) {
+      animation-delay: 0.12s
+    }
+
+    .hero>*:nth-child(3) {
+      animation-delay: 0.2s
+    }
+
+    .hero>*:nth-child(4) {
+      animation-delay: 0.28s
+    }
+
+    .hero>*:nth-child(5) {
+      animation-delay: 0.35s
+    }
+
+    .hero>*:nth-child(6) {
+      animation-delay: 0.42s
+    }
+
+    /* ── NEW MODULE STYLES ── */
+    .module-header { margin-bottom: 32px; }
+    .module-title { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+    .module-subtitle { color: var(--text3); font-family: var(--mono); font-size: 13px; margin-top: 4px; }
+
+    /* Practice */
+    .problem-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+    .problem-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+    .problem-card:hover { border-color: var(--accent); background: rgba(124, 106, 255, 0.05); transform: translateX(4px); }
+    .diff-tag { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; }
+    .diff-easy { color: var(--green); background: rgba(34, 211, 160, 0.1); }
+    .diff-medium { color: var(--amber); background: rgba(245, 158, 11, 0.1); }
+    .diff-hard { color: var(--red); background: rgba(248, 113, 113, 0.1); }
+
+    /* Mock Interview */
+    .interview-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; height: calc(100vh - 180px); }
+    .video-feed { background: #000; border-radius: 20px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+    .video-feed video { width: 100%; height: 100%; object-fit: cover; }
+    .suspicion-overlay { position: absolute; inset: 0; background: rgba(248, 113, 113, 0.2); border: 4px solid var(--red); display: none; align-items: center; justify-content: center; z-index: 5; }
+    .suspicion-msg { background: var(--red); color: #fff; padding: 12px 24px; border-radius: 10px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+
+    /* Syllabus */
+    .syllabus-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 24px; }
+    .syllabus-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .syllabus-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text2); display: flex; align-items: center; gap: 10px; }
+    .syllabus-item:last-child { border-bottom: none; }
+
+    /* Study Room */
+    .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 24px; }
+    .room-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: center; }
+    .room-code { font-family: var(--mono); font-size: 24px; font-weight: 800; color: var(--accent); margin: 16px 0; letter-spacing: 2px; }
+
+    /* Company Prep */
+    .company-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 24px; }
+    .company-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 32px; text-align: center; cursor: pointer; transition: 0.3s; }
+    .company-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .company-logo { font-size: 40px; margin-bottom: 16px; }
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav:not(.sidebar-nav) { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+      .nav-links { display: none; }
+      .hero { padding: 40px 16px 40px; }
+      .hero-sub { font-size: 14px; }
+      .demo-body { grid-template-columns: 1fr; }
+      .features { padding: 60px 16px; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .feat-card { padding: 24px; }
+      .auth-card { padding: 32px 20px; max-width: 100%; margin: 0 12px; }
+      .top-nav { padding: 0 16px; }
+      .sidebar { display: none; }
+      .app-container { padding-top: 64px; flex-direction: column; }
+      .dash-layout { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
+      .dash-card { padding: 24px; }
+      .profile-stats { gap: 24px; }
+      .lc-stats { flex-direction: column; gap: 24px; }
+      .lc-ring-container { width: 120px; height: 120px; }
+      .lc-ring-inner { width: 100px; height: 100px; }
+      .lc-ring-val { font-size: 32px; }
+      .editor-body { grid-template-columns: 1fr; }
+      .editor-sidebar { display: none; }
+      .editor-topbar { flex-wrap: wrap; gap: 8px; }
+      .module-title { font-size: 22px; }
+      #practice, #mock-interview, #syllabus, #study-room, #company-prep { padding: 20px 16px !important; }
+      .interview-layout { grid-template-columns: 1fr; height: auto; }
+      .video-feed { min-height: 200px; }
+      .syllabus-grid { grid-template-columns: 1fr; }
+      .company-grid { grid-template-columns: 1fr 1fr; }
+      .room-grid { grid-template-columns: 1fr; }
+      .dash-grid { grid-template-columns: 1fr; }
+      .viz-grid { grid-template-columns: 1fr; }
+      .filter-tabs { flex-wrap: wrap; }
+      .lang-pills { gap: 4px; }
+      .lang-pill { font-size: 10px; padding: 3px 10px; }
+      .lc-heatmap-container { gap: 8px; }
+      .lc-cell { width: 10px; height: 10px; }
+      .lc-month-grid { gap: 3px; }
+      #roomCodeInput { max-width: 100% !important; }
+      .module-header { margin-bottom: 16px; }
+      .auth-tabs { margin-bottom: 20px; }
+      .profile-dropdown { width: 220px; right: -40px; }
+    }
+    @media (max-width: 480px) {
+      .company-grid { grid-template-columns: 1fr; }
+      .hero-cta { flex-direction: column; align-items: stretch; }
+      .nav-cta { gap: 6px; }
+      .btn-lg { padding: 12px 20px; font-size: 14px; }
+      .profile-stats { gap: 16px; }
+      .p-stat-val { font-size: 22px; }
+      .dash-greeting h2 { font-size: 24px; }
+    }
+    /* Hamburger menu for mobile sidebar */
+    .hamburger { display: none; cursor: pointer; font-size: 22px; color: var(--text); padding: 4px; }
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .mobile-sidebar-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; display: none;
+      }
+      .mobile-sidebar-overlay.show { display: block; }
+      .sidebar.mobile-show {
+        display: flex !important;
+        position: fixed; left: 0; top: 64px; bottom: 0; z-index: 1000;
+        width: 260px; background: var(--surface); border-right: 1px solid var(--border);
+        animation: slideIn 0.25s ease-out;
+      }
+      @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- ═══════════════════ LANDING ═══════════════════ -->
+  <div id="landing" class="page active">
+    <nav>
+      <div class="logo">Code<span>Guru</span></div>
+      <div class="nav-links">
+        <a onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Features</a>
+        <a onclick="document.getElementById('languages').scrollIntoView({behavior:'smooth'})">Languages</a>
+        <a onclick="document.getElementById('feedback').scrollIntoView({behavior:'smooth'})">Feedback</a>
+        <a onclick="document.getElementById('colleges').scrollIntoView({behavior:'smooth'})">For Colleges</a>
+      </div>
+      <div class="nav-cta">
+        <button class="btn btn-ghost" onclick="show('login')">Sign in</button>
+        <button class="btn btn-primary" onclick="show('login')">Get started free</button>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Built for Indian CS students — in your language
+      </div>
+      <h1>Learn to code.<br><em>Actually</em> understand it.<br>In <span class="hl">Hindi. Telugu. Tamil.</span></h1>
+      <p class="hero-sub">// AI that teaches like a patient guru — not just fixes your code silently.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary btn-lg" onclick="show('login')">Start for free →</button>
+        <button class="btn btn-ghost btn-lg" onclick="show('editor')">Try the editor</button>
+      </div>
+      <div class="lang-pills" id="languages">
+        <span class="lang-pill active">हिंदी</span>
+        <span class="lang-pill active">తెలుగు</span>
+        <span class="lang-pill active">தமிழ்</span>
+        <span class="lang-pill">मराठी</span>
+        <span class="lang-pill">ਪੰਜਾਬੀ</span>
+        <span class="lang-pill">ગુજરાતી</span>
+        <span class="lang-pill">Hinglish</span>
+        <span class="lang-pill">English</span>
+      </div>
+      <div class="demo-window">
+        <div class="demo-bar">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span style="margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--text3)">main.py — CodeGuru
+            Editor</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-code">
+            <span class="kw">def</span> <span class="fn">find_max</span>(numbers):<br />
+            &nbsp;&nbsp;max_val = numbers[0]<br />
+            &nbsp;&nbsp;<span class="kw">for</span> n <span class="kw">in</span> numbers:<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> n > max_val<span class="err">⬅</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_val = n<br />
+            &nbsp;&nbsp;<span class="kw">return</span> max_val<br /><br />
+            <span style="color:var(--text3)"># SyntaxError on line 4</span>
+          </div>
+          <div class="demo-chat">
+            <div class="chat-ai">
+              <div class="who">🤖 CodeGuru • Hindi mode</div>
+              Bhai, line 4 mein <code
+                style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;font-size:11px">if</code> ke
+              baad <strong>colon (:)</strong> missing hai!<br /><br />
+              Python mein har <code
+                style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;font-size:11px">if</code>,
+              <code
+                style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;font-size:11px">for</code>,
+              <code
+                style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;font-size:11px">def</code> ke
+              baad colon lagana zaroori hai — ye rule hai.
+            </div>
+            <div class="chat-user">kyun chahiye colon? samajh nahi aaya</div>
+            <div class="chat-ai">
+              Socho — colon ek signal hai Python ko: "ab iske andar ka kaam shuru hota hai" 🎯
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <p class="section-label">// features</p>
+      <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon">📷</div>
+          <h3>Photo → Code</h3>
+          <p>Click a photo of your notebook. AI reads, debugs, explains it instantly.</p>
+          <span class="feat-tag">Only on CodeGuru</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🎓</div>
+          <h3>Syllabus Mode</h3>
+          <p>Tied to JNTU, Anna, VTU, Mumbai. AI explains only what's in your exam.</p>
+          <span class="feat-tag">Only on CodeGuru</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🧠</div>
+          <h3>Socratic Learning</h3>
+          <p>AI asks YOU questions first. Forces real understanding — not copy-paste.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🏢</div>
+          <h3>Company Prep</h3>
+          <p>TCS, Infosys, Wipro, Amazon patterns. Practice what actually gets asked.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🎤</div>
+          <h3>Voice Doubts</h3>
+          <p>Speak your doubt in Hindi or Telugu. No typing, no English required.</p>
+          <span class="feat-tag">Only on CodeGuru</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🧑‍🤝‍🧑</div>
+          <h3>Study Rooms</h3>
+          <p>Share a room link. Your whole group sees the same code and AI explanation live.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="feedback" style="padding:60px 40px; max-width:800px; margin:0 auto; text-align:center;">
+      <p class="section-label">// feedback</p>
+      <h2 class="section-title" style="margin-bottom:32px;">Help us improve</h2>
+      <div
+        style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; text-align:left; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+        <div class="form-group" style="margin-bottom:16px;">
+          <label
+            style="display:block; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:8px; font-family:var(--mono); letter-spacing:0.05em;">YOUR
+            FEEDBACK</label>
+          <textarea placeholder="Tell us what you think..."
+            style="width:100%; background:var(--surface2); border:1px solid var(--border2); border-radius:9px; padding:16px; color:var(--text); font-family:var(--mono); font-size:13px; outline:none; transition:all 0.2s; resize:vertical; min-height:120px;"
+            onfocus="this.style.borderColor='var(--accent)'; this.style.boxShadow='0 0 0 3px var(--accent-glow)';"
+            onblur="this.style.borderColor='var(--border2)'; this.style.boxShadow='none';"></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:8px;"
+          onclick="alert('Thank you for your feedback!')">Submit Feedback →</button>
+      </div>
+    </section>
+
+    <section id="colleges"
+      style="padding:80px 40px; text-align:center; background:linear-gradient(to bottom, transparent, var(--surface2)); border-top:1px solid var(--border);">
+      <h2 class="section-title" style="margin-bottom:16px; font-size:32px;">Bring CodeGuru to your College</h2>
+      <p
+        style="color:var(--text2); font-family:var(--mono); font-size:14px; margin-bottom:32px; max-width:500px; margin-left:auto; margin-right:auto;">
+        Get custom syllabus integration, student progress analytics, and private study rooms for your institution.</p>
+      <button class="btn btn-ghost btn-lg">Contact Education Team</button>
+    </section>
+
+    <div
+      style="text-align:center;padding:40px;border-top:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:12px;background:var(--surface2);">
+      © 2025 CodeGuru — Built for 4 million Indian CS students
+    </div>
+  </div>
+
+  <!-- ═══════════════════ LOGIN ═══════════════════ -->
+  <div id="login" class="page">
+    <nav>
+      <div class="logo" style="cursor:pointer" onclick="show('landing')">Code<span>Guru</span></div>
+    </nav>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px;">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo">Code<span>Guru</span></div>
+        </div>
+        <div class="auth-tabs">
+          <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign in</div>
+          <div class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Sign up</div>
+        </div>
+
+        <div id="form-login">
+          <div class="form-group">
+            <label>USERNAME</label>
+            <input type="text" id="loginUser" placeholder="username" />
+          </div>
+          <div class="form-group">
+            <label>PASSWORD</label>
+            <input type="password" id="loginPass" placeholder="••••••••" />
+          </div>
+          <button class="btn btn-primary" id="loginBtn" style="width:100%;margin-top:8px"
+            onclick="handleAuth('login')">Sign in →</button>
+          <div class="auth-footer" style="margin-top:12px">Forgot password? <span>Reset</span></div>
+        </div>
+
+        <div id="form-signup" style="display:none">
+          <div class="form-group">
+            <label>USERNAME</label>
+            <input type="text" id="signupUser" placeholder="username" />
+          </div>
+          <div class="form-group">
+            <label>EMAIL</label>
+            <input type="email" id="signupEmail" placeholder="you@college.edu" />
+          </div>
+          <div class="form-group">
+            <label>PASSWORD</label>
+            <input type="password" id="signupPass" placeholder="••••••••" />
+            <p style="font-size:10px;color:var(--text3);margin-top:4px">8-12 chars, include A-Z, a-z, 0-9, and symbols.
+            </p>
+          </div>
+          <button class="btn btn-primary" id="signupBtn" style="width:100%;margin-top:8px"
+            onclick="handleAuth('signup')">Create account →</button>
+        </div>
+
+        <div class="auth-divider">or continue with</div>
+        <button class="btn btn-ghost" style="width:100%">🔗 Google</button>
+        <div class="auth-footer">
+          By signing up you agree to our <span>Terms</span> and <span>Privacy Policy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ NAVIGATION BAR ═══════════════════ -->
+  <nav class="top-nav" id="topNav" style="display:none">
+    <div class="nav-left" style="display:flex; align-items:center; gap:12px;">
+      <span class="hamburger" id="hamburgerBtn" onclick="toggleMobileSidebar()">☰</span>
+      <div class="logo">Code<span>Guru</span></div>
+    </div>
+    <div class="nav-right">
+      <div class="profile-container">
+        <div class="profile-trigger" onclick="toggleProfileDropdown()">
+          <span class="user-name" id="navUsername">User</span>
+          <div class="avatar" id="navAvatar" onclick="event.stopPropagation(); show('dashboard')">U</div>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="dropdown-header">
+            <div class="avatar">U</div>
+            <div>
+              <div class="user-name">User Name</div>
+              <div class="user-meta">@username</div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" onclick="show('dashboard')">My Account</div>
+          <div class="dropdown-item" onclick="show('progress')">Progress</div>
+          <div class="dropdown-item">Settings</div>
+          <div class="dropdown-item">Appearance</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" style="color:var(--red)" onclick="logout()">Logout</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="app-container" id="appContainer" style="display:none">
+    <!-- Mobile sidebar overlay -->
+    <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="toggleMobileSidebar()"></div>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="mainSidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-item active" onclick="show('editor')"><span class="nav-icon">✎</span> Editor</div>
+
+        <div class="nav-group">
+          <div class="nav-item has-dropdown" onclick="toggleDropdown(this)">
+            <span class="nav-icon">⬡</span> Practice <span class="dropdown-arrow">▼</span>
+          </div>
+          <div class="dropdown-menu">
+            <div class="sub-item" onclick="show('practice'); loadProblems('Algorithms')">Algorithms</div>
+            <div class="sub-item" onclick="show('practice'); loadProblems('Data Structures')">Data Structures</div>
+            <div class="sub-item" onclick="show('practice'); loadProblems('SQL Queries')">SQL Queries</div>
+          </div>
+        </div>
+
+        <div class="nav-item" onclick="show('mock-interview')"><span class="nav-icon">◎</span> Mock
+          Interview</div>
+
+        <div class="nav-group">
+          <div class="nav-item has-dropdown" onclick="toggleDropdown(this)">
+            <span class="nav-icon">☰</span> Syllabus <span class="dropdown-arrow">▼</span>
+          </div>
+          <div class="dropdown-menu">
+            <div class="sub-item" onclick="show('syllabus'); loadUniversities()">University Docs</div>
+            <div class="sub-item" onclick="show('practice'); loadProblems('Algorithms')">Competitive Coding</div>
+          </div>
+        </div>
+
+        <div class="nav-item" onclick="show('study-room')"><span class="nav-icon">⊙</span> Study Room</div>
+        <div class="nav-item" onclick="show('company-prep'); loadCompanies()"><span class="nav-icon">↑</span> Company Prep
+        </div>
+        <div class="nav-item" onclick="show('progress')"><span class="nav-icon">◈</span> Progress</div>
+      </nav>
+    </div>
+
+    <div class="page-container">
+      <!-- DASHBOARD -->
+      <div id="dashboard" class="page">
+        <div class="dash-layout">
+          <div class="dash-left">
+            <div class="dash-card profile-card">
+              <div class="profile-card-header">
+                <div class="avatar large">U</div>
+                <h2 id="profileName">User Name</h2>
+                <p id="profileUsername">@username</p>
+              </div>
+              <div class="profile-stats">
+                <div class="p-stat">
+                  <div class="p-stat-val" id="solvedCountSmall">0</div>
+                  <div class="p-stat-label">Solved</div>
+                </div>
+                <div class="p-stat">
+                  <div class="p-stat-val" id="streakSmall">0</div>
+                  <div class="p-stat-label">Streak</div>
+                </div>
+              </div>
+              <div class="profile-bio" id="dashboardBio">CodeGuru Student</div>
+              <button class="btn btn-ghost" style="width:100%;margin-top:24px">Edit Profile</button>
+            </div>
+          </div>
+
+          <div class="dash-right">
+            <div class="dash-header">
+              <div class="dash-greeting">
+                <h2 id="userGreeting">Namaste, Student 👋</h2>
+                <p>// Track your progress. Ready to solve some problems?</p>
+              </div>
+              <button class="btn btn-primary" onclick="show('editor')">Open Editor →</button>
+            </div>
+
+            <div class="dash-card lc-stats">
+              <div class="lc-ring-container">
+                <div class="lc-ring">
+                  <div class="lc-ring-inner">
+                    <div class="lc-ring-val" id="solvedCount">0</div>
+                    <div class="lc-ring-label">Solved</div>
+                  </div>
+                </div>
+              </div>
+              <div class="lc-bars">
+                <div class="lc-bar-row">
+                  <div class="lc-bar-header"><span style="color:var(--green)">Easy</span> <span><strong
+                        id="easyCount">0</strong> /614</span></div>
+                  <div class="lc-bar-track">
+                    <div class="lc-bar-fill" id="easyFill" style="width:0%; background:var(--green)"></div>
+                  </div>
+                </div>
+                <div class="lc-bar-row">
+                  <div class="lc-bar-header"><span style="color:var(--amber)">Medium</span> <span><strong
+                        id="medCount">0</strong> /1334</span></div>
+                  <div class="lc-bar-track">
+                    <div class="lc-bar-fill" id="medFill" style="width:0%; background:var(--amber)"></div>
+                  </div>
+                </div>
+                <div class="lc-bar-row">
+                  <div class="lc-bar-header"><span style="color:var(--red)">Hard</span> <span><strong
+                        id="hardCount">0</strong> /556</span></div>
+                  <div class="lc-bar-track">
+                    <div class="lc-bar-fill" id="hardFill" style="width:0%; background:var(--red)"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-card lc-heatmap" style="margin-top:24px">
+              <div class="lc-heatmap-header">
+                <div><strong id="totalSubmissions">0</strong> submissions in 2025</div>
+                <div style="font-size:11px">Active Days: <strong id="activeDays">0</strong> &nbsp; Max Streak: <strong
+                    id="userStreak">0</strong></div>
+              </div>
+              <div class="lc-heatmap-container" id="heatmapGrid"></div>
+            </div>
+
+            <div class="dash-grid" style="margin-top:24px">
+              <div class="dash-card">
+                <div class="dash-card-title">Recent Activity <a>View all →</a></div>
+                <div id="recentActivityList">
+                  <div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;font-family:var(--mono)">
+                    No recent submissions. <br>Start coding to see your progress!
+                  </div>
+                </div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-card-title">Share your feedback 🙏</div>
+                <textarea id="feedbackText" placeholder="Suggestions or bugs..."
+                  style="width:100%;height:80px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:13px;resize:none;margin-bottom:12px"></textarea>
+                <button class="btn btn-primary" id="feedbackBtn" onclick="submitFeedback()" style="width:100%">Send
+                  Feedback →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS PAGE -->
+      <div id="progress" class="page">
+        <div class="progress-container">
+          <h2 style="font-size:28px;font-weight:800;letter-spacing:-1px">Learning Progress</h2>
+          <p style="color:var(--text3);font-family:var(--mono);margin-top:4px">// Detailed visual summary of your
+            journey</p>
+          <div class="viz-grid">
+            <div class="viz-card">
+              <div class="viz-header">Problems Practiced <span>Weekly</span></div>
+              <div class="chart-placeholder">
+                <div class="bar" style="height:40%"></div>
+                <div class="bar" style="height:70%"></div>
+                <div class="bar" style="height:20%"></div>
+                <div class="bar" style="height:90%"></div>
+                <div class="bar" style="height:50%"></div>
+                <div class="bar" style="height:80%"></div>
+                <div class="bar" style="height:10%"></div>
+              </div>
+            </div>
+            <div class="viz-card">
+              <div class="viz-header">Mock Interviews <span>Last 5</span></div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span>FAANG Mock #1</span>
+                  <strong style="color:var(--green)">8.5/10</strong>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:85%"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span>System Design Intro</span>
+                  <strong style="color:var(--amber)">6.2/10</strong>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:62%;background:var(--amber)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRACTICE PAGE -->
+      <div id="practice" class="page" style="padding: 60px;">
+        <div class="module-header">
+          <h2 class="module-title">Practice Problems</h2>
+          <p class="module-subtitle">// Master Algorithms, Data Structures, and SQL</p>
+        </div>
+        <div class="filter-tabs" style="display:flex; gap:12px; margin-bottom:24px;">
+          <button class="btn btn-ghost active" onclick="loadProblems('Algorithms')">Algorithms</button>
+          <button class="btn btn-ghost" onclick="loadProblems('Data Structures')">Data Structures</button>
+          <button class="btn btn-ghost" onclick="loadProblems('SQL Queries')">SQL Queries</button>
+        </div>
+        <div class="problem-list" id="problemList">
+          <!-- Problems populated by JS -->
+        </div>
+      </div>
+
+      <!-- MOCK INTERVIEW PAGE -->
+      <div id="mock-interview" class="page" style="padding: 60px;">
+        <div class="module-header">
+          <h2 class="module-title">AI Mock Interview</h2>
+          <p class="module-subtitle">// Real-time facial recognition and HR questioning</p>
+        </div>
+        <div class="interview-layout">
+          <div class="video-feed">
+            <video id="userVideo" autoplay muted></video>
+            <div class="suspicion-overlay" id="suspicionOverlay">
+              <div class="suspicion-msg">⚠️ FOCUS ON THE SCREEN</div>
+            </div>
+          </div>
+          <div class="ai-panel" style="border:1px solid var(--border); border-radius:20px; overflow:hidden;">
+            <div class="ai-header" style="background:var(--surface2)">
+              <div class="ai-header-left">🤖 Interviewer AI</div>
+            </div>
+            <div class="ai-messages" id="interviewChat">
+              <div class="msg-ai">
+                <div class="msg-bubble">Welcome to your mock interview. Please click "Start Interview" when you are ready. I will monitor your expressions and focus.</div>
+              </div>
+            </div>
+            <div class="ai-input-wrap">
+              <button class="btn btn-primary" style="width:100%" onclick="startMockInterview()">Start Interview</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SYLLABUS PAGE -->
+      <div id="syllabus" class="page" style="padding: 60px;">
+        <div class="module-header">
+          <h2 class="module-title">University Syllabus</h2>
+          <p class="module-subtitle">// Integrated curriculum for Indian Universities</p>
+        </div>
+        <div style="display:flex; gap:16px; margin-bottom:32px;">
+          <select class="lang-select" id="uniSelect" onchange="loadUniversitySyllabus()">
+            <option value="">Select University</option>
+          </select>
+          <select class="lang-select" id="branchSelect">
+            <option>Computer Science</option>
+            <option>IT</option>
+            <option>ECE</option>
+          </select>
+        </div>
+        <div class="syllabus-grid" id="syllabusGrid">
+          <!-- Syllabus data populated by JS -->
+        </div>
+      </div>
+
+      <!-- STUDY ROOM PAGE -->
+      <div id="study-room" class="page" style="padding: 60px;">
+        <div class="module-header">
+          <h2 class="module-title">Study Rooms</h2>
+          <p class="module-subtitle">// Collaborate and learn with your friends</p>
+        </div>
+        <div style="display:flex; gap:12px; margin-bottom:32px;">
+          <button class="btn btn-primary" onclick="createRoom()">Create New Room</button>
+          <input type="text" id="roomCodeInput" class="ai-input" style="max-width:200px" placeholder="Enter Room Code">
+          <button class="btn btn-ghost" onclick="joinRoom()">Join Room</button>
+        </div>
+        <div class="room-grid" id="roomGrid">
+          <div style="grid-column: 1/-1; text-align:center; padding:100px; color:var(--text3)">
+            Create a room to start collaborating!
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPANY PREP PAGE -->
+      <div id="company-prep" class="page" style="padding: 60px;">
+        <div class="module-header">
+          <h2 class="module-title">Company Preparation</h2>
+          <p class="module-subtitle">// Crack the code for top tech giants</p>
+        </div>
+        <div class="company-grid" id="companyGrid">
+          <!-- Company cards populated by JS -->
+        </div>
+      </div>
+
+      <!-- ═══════════════════ EDITOR ═══════════════════ -->
+      <div id="editor" class="page" style="height:100vh;overflow:hidden">
+        <div class="editor-sidebar">
+          <div onclick="show('dashboard')" title="Dashboard" class="ed-btn">⊞</div>
+          <div onclick="show('editor')" title="Editor" class="ed-btn active">✎</div>
+          <div onclick="demoEditorFeature(this, 'Files')" title="Files" class="ed-btn">⊟</div>
+          <div onclick="runCode()" title="Run" class="ed-btn">▶</div>
+          <div onclick="demoEditorFeature(this, 'Debug')" title="Debug" class="ed-btn">⬡</div>
+          <div style="flex:1"></div>
+          <div onclick="demoEditorFeature(this, 'Settings')" title="Settings" class="ed-btn">⚙</div>
+        </div>
+
+        <div class="editor-main">
+          <div class="editor-topbar">
+            <div class="file-tab active" id="tabMain" onclick="switchFile('main')">📄 main.py</div>
+            <div class="file-tab" id="tabSolution" onclick="switchFile('solution')">📄 solution.py</div>
+            <select class="lang-select" id="langSelect" onchange="changeLanguage()">
+              <option>Python</option>
+              <option>Java</option>
+              <option>C++</option>
+              <option>JavaScript</option>
+            </select>
+          </div>
+
+          <div class="editor-body">
+            <div class="code-panel">
+              <div class="code-area-wrap">
+                <div class="line-nums" id="lineNums">1<br />2<br />3<br />4<br />5<br />6<br />7<br />8</div>
+                <textarea class="code-input" id="codeInput" spellcheck="false" oninput="updateLines()"
+                  onkeydown="handleTab(event)">def find_max(numbers):
+    max_val = numbers[0]
+    for n in numbers:
+        if n > max_val
+            max_val = n
+    return max_val
+
+# Try editing this code!</textarea>
+              </div>
+              <div class="stdin-container"
+                style="border-top: 1px solid var(--border); padding: 8px 16px; background: var(--surface2);">
+                <div
+                  style="font-size: 11px; color: var(--text3); font-family: var(--mono); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Custom Input (STDIN)</div>
+                <textarea id="stdInput" spellcheck="false"
+                  placeholder="Enter custom inputs here (e.g. 10 \n 20) before clicking Run..."
+                  style="width: 100%; height: 60px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; color: var(--text2); font-family: var(--mono); font-size: 13px; padding: 8px; resize: vertical;"></textarea>
+              </div>
+              <div class="error-bar" id="errorBar" style="color:var(--text3)">
+                ✓ Ready
+              </div>
+              <div class="editor-actions">
+                <button class="run-btn" onclick="runCode()">▶ Run</button>
+                <div class="lang-mode">
+                  <button class="mode-pill active" onclick="setMode(this,'Generate')">Generate</button>
+                  <button class="mode-pill" onclick="setMode(this,'Debug')">Debug</button>
+                  <button class="mode-pill" onclick="setMode(this,'Explain')">Explain</button>
+                  <button class="mode-pill" onclick="setMode(this,'Socratic')">Socratic</button>
+                </div>
+                <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3)"
+                  id="modeLabel">// mode: Generate</span>
+              </div>
+            </div>
+
+            <div class="ai-panel">
+              <div class="ai-header">
+                <div class="ai-header-left">
+                  <div class="ai-status"></div>
+                  CodeGuru AI
+                </div>
+                <div class="lang-switch">
+                  <button class="lsw" onclick="setLang(this,'हि')">हि</button>
+                  <button class="lsw active" onclick="setLang(this,'తె')">తె</button>
+                  <button class="lsw" onclick="setLang(this,'த')">த</button>
+                  <button class="lsw" onclick="setLang(this,'EN')">EN</button>
+                </div>
+              </div>
+
+              <div class="ai-messages" id="aiMessages">
+                <div class="msg-ai">
+                  <div class="msg-avatar">🤖</div>
+                  <div class="msg-bubble">
+                    <div class="who" id="welcomeMsgMode">CodeGuru • telugu mode</div>
+                    <span id="welcomeMsgText">Namaste! Nenu meeru code cheyyadaniki sahayapadataanu. 🙏</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ai-input-wrap">
+                <input class="ai-input" id="aiInput" placeholder="Meeru doubt adugundi... (any language)"
+                  onkeydown="handleEnter(event)" />
+                <button class="send-btn" onclick="sendMsg()">➤</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function show(id) {
+          document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+          const target = document.getElementById(id);
+          if (target) target.classList.add('active');
+          window.scrollTo(0, 0);
+
+          // Show/Hide top nav and sidebar container based on auth
+          const isAuthPage = ['landing', 'login'].includes(id);
+          const topNav = document.getElementById('topNav');
+          const appContainer = document.getElementById('appContainer');
+
+          if (topNav) topNav.style.display = isAuthPage ? 'none' : 'flex';
+          if (appContainer) appContainer.style.display = isAuthPage ? 'none' : 'flex';
+
+          // Highlight active menu item
+          document.querySelectorAll('.nav-item').forEach(i => {
+            i.classList.toggle('active', i.getAttribute('onclick')?.includes(`'${id}'`));
+          });
+        }
+
+        function toggleProfileDropdown() {
+          const dropdown = document.getElementById('profileDropdown');
+          if (dropdown) dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function (event) {
+          if (!event.target.closest('.profile-container')) {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+          }
+        }
+
+        // Interactive Glass Glow
+        document.addEventListener('mousemove', e => {
+          const cards = document.querySelectorAll('.dash-card, .viz-card');
+          cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+          });
+        });
+
+        function demoFeature(el, featureName) {
+          document.querySelectorAll('.sidebar-nav .nav-item').forEach(n => n.classList.remove('active'));
+          el.classList.add('active');
+          alert('Testing feature: ' + featureName + '\n\nThis module is in preview mode for the demo.');
+        }
+
+        function demoEditorFeature(el, featureName) {
+          document.querySelectorAll('.editor-sidebar .ed-btn').forEach(n => n.classList.remove('active'));
+          el.classList.add('active');
+          alert('Testing tool: ' + featureName + '\n\nThis panel is in preview mode for the demo.');
+        }
+
+        function switchTab(t) {
+          document.getElementById('tab-login').classList.toggle('active', t === 'login');
+          document.getElementById('tab-signup').classList.toggle('active', t === 'signup');
+          document.getElementById('form-login').style.display = t === 'login' ? '' : 'none';
+          document.getElementById('form-signup').style.display = t === 'signup' ? '' : 'none';
+        }
+
+        function updateLines() {
+          const lines = document.getElementById('codeInput').value.split('\n').length;
+          document.getElementById('lineNums').innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br/>');
+        }
+
+        function handleTab(e) {
+          if (e.key === 'Tab') { e.preventDefault(); const t = e.target; const s = t.selectionStart; t.value = t.value.substring(0, s) + '    ' + t.value.substring(t.selectionEnd); t.selectionStart = t.selectionEnd = s + 4; updateLines(); }
+        }
+
+        const CODE_TEMPLATES = {
+          'Python': `def find_max(numbers):\n    max_val = numbers[0]\n    for n in numbers:\n        if n > max_val:\n            max_val = n\n    return max_val\n\n# Try editing this code!`,
+          'Java': `class Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 5, 3, 9, 2};\n        int max = numbers[0];\n        for(int n : numbers) {\n            if(n > max) max = n;\n        }\n        System.out.println("Max is: " + max);\n    }\n}`,
+          'C++': `#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> numbers = {1, 5, 3, 9, 2};\n    int max_val = numbers[0];\n    for(int n : numbers) {\n        if(n > max_val) max_val = n;\n    }\n    cout << "Max is: " << max_val << endl;\n    return 0;\n}`,
+          'JavaScript': `function findMax(numbers) {\n    let maxVal = numbers[0];\n    for(let n of numbers) {\n        if(n > maxVal) maxVal = n;\n    }\n    return maxVal;\n}\n\nconsole.log("Max is: " + findMax([1, 5, 3, 9, 2]));`
+        };
+
+        const SOLUTION_TEMPLATES = {
+          'Python': `def find_max(numbers):\n    # Optimized built-in solution\n    return max(numbers)\n\nprint("Max is:", find_max([1, 5, 3, 9, 2]))`,
+          'Java': `import java.util.Arrays;\n\nclass Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 5, 3, 9, 2};\n        int max = Arrays.stream(numbers).max().getAsInt();\n        System.out.println("Max is: " + max);\n    }\n}`,
+          'C++': `#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    vector<int> numbers = {1, 5, 3, 9, 2};\n    int max_val = *max_element(numbers.begin(), numbers.end());\n    cout << "Max is: " << max_val << endl;\n    return 0;\n}`,
+          'JavaScript': `function findMax(numbers) {\n    // Optimized built-in solution\n    return Math.max(...numbers);\n}\n\nconsole.log("Max is: " + findMax([1, 5, 3, 9, 2]));`
+        };
+
+        let userCodeCache = { ...CODE_TEMPLATES };
+        let activeTab = 'main';
+
+        function changeLanguage() {
+          const lang = document.getElementById('langSelect').value;
+          const input = document.getElementById('codeInput');
+
+          if (activeTab === 'main') {
+            input.value = userCodeCache[lang];
+          } else {
+            input.value = SOLUTION_TEMPLATES[lang];
+          }
+
+          const exts = { 'Python': '.py', 'Java': '.java', 'C++': '.cpp', 'JavaScript': '.js' };
+          const ext = exts[lang];
+          document.getElementById('tabMain').textContent = '📄 main' + ext;
+          document.getElementById('tabSolution').textContent = '📄 solution' + ext;
+
+          updateLines();
+        }
+
+        function switchFile(tab) {
+          const lang = document.getElementById('langSelect').value;
+          const input = document.getElementById('codeInput');
+
+          document.getElementById('tabMain').classList.toggle('active', tab === 'main');
+          document.getElementById('tabSolution').classList.toggle('active', tab === 'solution');
+
+          if (activeTab === 'main') {
+            userCodeCache[lang] = input.value;
+          }
+
+          activeTab = tab;
+
+          if (tab === 'main') {
+            input.value = userCodeCache[lang];
+            input.readOnly = false;
+          } else {
+            input.value = SOLUTION_TEMPLATES[lang];
+            input.readOnly = true;
+          }
+          updateLines();
+        }
+
+        async function runCode() {
+          const bar = document.getElementById('errorBar');
+          const code = document.getElementById('codeInput')?.value || '';
+          const stdInput = document.getElementById('stdInput')?.value || '';
+          const langSelect = document.getElementById('langSelect');
+          const language = langSelect ? langSelect.value : 'Python';
+
+          bar.innerHTML = '⏳ Running code...';
+          bar.style.color = 'var(--text)';
+          bar.style.borderTopColor = 'var(--border)';
+          bar.style.background = 'var(--surface2)';
+
+          try {
+            const response = await fetch(`${API_BASE}/api/run`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code, language, stdin: stdInput })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              bar.innerHTML = '✓ Output: <br><pre style="margin:4px 0 0;font-family:var(--mono);font-size:12px;white-space:pre-wrap">' + escapeHtml(data.stdout || 'No output') + '</pre>';
+              bar.style.color = 'var(--green)';
+              bar.style.borderTopColor = 'rgba(34,211,160,0.2)';
+              bar.style.background = 'rgba(34,211,160,0.05)';
+            } else {
+              bar.innerHTML = '⚠ Error: <br><pre style="margin:4px 0 0;font-family:var(--mono);font-size:12px;white-space:pre-wrap">' + escapeHtml(data.stderr) + '</pre>';
+              bar.style.color = 'var(--red)';
+              bar.style.borderTopColor = 'rgba(248,113,113,0.2)';
+              bar.style.background = 'rgba(248,113,113,0.08)';
+            }
+          } catch (err) {
+            bar.innerHTML = '⚠ Execution Failed: ' + escapeHtml(err.message);
+            bar.style.color = 'var(--red)';
+            bar.style.borderTopColor = 'rgba(248,113,113,0.2)';
+            bar.style.background = 'rgba(248,113,113,0.08)';
+          }
+        }
+
+        function setMode(el, mode) {
+          document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+          el.classList.add('active');
+          document.getElementById('modeLabel').textContent = '// mode: ' + mode;
+        }
+
+        function setLang(el, lang) {
+          document.querySelectorAll('.lsw').forEach(l => l.classList.remove('active'));
+          el.classList.add('active');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  CODEGURU — REAL API CONNECTION
+        //  Change API_BASE to your backend URL when deployed:
+        //    Local:          http://localhost:8000
+        //    PythonAnywhere: https://yourname.pythonanywhere.com
+        //    Render:         https://codeguru-api.onrender.com
+        // ══════════════════════════════════════════════════════════
+
+        const API_BASE = window.location.origin;  // Dynamic base URL
+
+        // Track current mode and language selected in editor
+        let currentMode = 'chat';
+        let currentLang = 'telugu';  // matches the default active language button
+
+        // Override setMode to also track the value
+        const _origSetMode = setMode;
+        function setMode(el, mode) {
+          _origSetMode(el, mode);
+          currentMode = mode.toLowerCase();
+        }
+
+        // Override setLang to also track the value
+        function setLang(el, lang) {
+          document.querySelectorAll('.lsw').forEach(l => l.classList.remove('active'));
+          el.classList.add('active');
+          // Map button labels to API language keys
+          const langMap = { 'हि': 'hindi', 'తె': 'telugu', 'த': 'tamil', 'EN': 'english' };
+          currentLang = langMap[lang] || 'english';
+
+          const modeLabel = document.getElementById('welcomeMsgMode');
+          if (modeLabel) modeLabel.textContent = `CodeGuru • ${currentLang} mode`;
+
+          const msgText = document.getElementById('welcomeMsgText');
+          if (msgText) {
+            const greetings = {
+              'hindi': 'Namaste! Main aapko code karne mein madad karunga. 🙏',
+              'telugu': 'Namaste! Nenu meeru code cheyyadaniki sahayapadataanu. 🙏',
+              'tamil': 'Vanakkam! Naan ungalukku code seiya udhavuven. 🙏',
+              'english': 'Hello! I am here to help you code. 🙏'
+            };
+            msgText.textContent = greetings[currentLang] || greetings['english'];
+          }
+        }
+
+        // ── Add a message bubble to the AI chat panel ──────────────
+        function addMessage(role, text, provider = '') {
+          const msgs = document.getElementById('aiMessages');
+
+          const wrap = document.createElement('div');
+          wrap.className = role === 'user' ? 'msg-ai msg-user' : 'msg-ai';
+
+          const providerTag = provider
+            ? `<div class="who">CodeGuru • ${provider} (${currentLang})</div>`
+            : '';
+
+          if (role === 'user') {
+            wrap.innerHTML = `
+      <div class="msg-avatar" style="background:var(--surface3)">👤</div>
+      <div class="msg-bubble">${escapeHtml(text)}</div>`;
+          } else {
+            wrap.innerHTML = `
+      <div class="msg-avatar">🤖</div>
+      <div class="msg-bubble">${providerTag}${formatAIText(text)}</div>`;
+          }
+
+          msgs.appendChild(wrap);
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        // ── Show a typing indicator while waiting for AI ───────────
+        function showTyping() {
+          const msgs = document.getElementById('aiMessages');
+          const el = document.createElement('div');
+          el.className = 'msg-ai';
+          el.id = 'typingIndicator';
+          el.innerHTML = `
+    <div class="msg-avatar">🤖</div>
+    <div class="msg-bubble" style="color:var(--text3);font-style:italic;font-size:12px">
+      CodeGuru is thinking...
+    </div>`;
+          msgs.appendChild(el);
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        function hideTyping() {
+          const el = document.getElementById('typingIndicator');
+          if (el) el.remove();
+        }
+
+        // ── Format AI response — handle code blocks and newlines ───
+        function formatAIText(text) {
+          // Escape HTML first
+          let safe = escapeHtml(text);
+          // Convert ```code blocks``` to styled boxes
+          safe = safe.replace(/```[\w]*\n?([\s\S]*?)```/g,
+            '<div class="code-snippet">$1</div>');
+          // Convert `inline code` to styled spans
+          safe = safe.replace(/`([^`]+)`/g,
+            '<code style="background:rgba(255,255,255,0.08);padding:0 4px;border-radius:3px;font-size:11px">$1</code>');
+          // Convert **bold** text
+          safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+          // Convert newlines to <br>
+          safe = safe.replace(/\n/g, '<br>');
+          return safe;
+        }
+
+        function escapeHtml(text) {
+          return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+        }
+
+        // ── Determine which API endpoint to call based on mode ─────
+        function getEndpoint(mode) {
+          if (mode === 'debug') return '/api/debug';
+          if (mode === 'explain') return '/api/explain';
+          if (mode === 'generate') return '/api/generate';
+          return '/api/chat';  // default for chat + socratic
+        }
+
+        // ── Build request body based on mode ──────────────────────
+        function buildRequestBody(message, mode, language, code) {
+          if (mode === 'debug') {
+            return { code, error: message, language, lang: 'python' };
+          }
+          if (mode === 'explain' || mode === 'socratic') {
+            return { code: code || message, language, lang: 'python', mode };
+          }
+          if (mode === 'generate') {
+            return { description: message, language, lang: 'python' };
+          }
+          // chat mode
+          return { message, language, code, mode };
+        }
+
+        // ── MAIN SEND FUNCTION — connects to your real backend ─────
+        async function sendMsg() {
+          const input = document.getElementById('aiInput');
+          const message = input.value.trim();
+          if (!message) return;
+
+          // Get student's code from the editor
+          const code = document.getElementById('codeInput')?.value || '';
+
+          // Show user message immediately
+          addMessage('user', message);
+          input.value = '';
+
+          // Show typing indicator
+          showTyping();
+
+          try {
+            const endpoint = getEndpoint(currentMode);
+            const body = buildRequestBody(message, currentMode, currentLang, code);
+
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body),
+            });
+
+            hideTyping();
+
+            if (!response.ok) {
+              throw new Error(`Server error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+              addMessage('ai', data.response, data.provider);
+            } else {
+              addMessage('ai',
+                'Sorry, all AI services are busy right now. Please try again in a minute! 🙏',
+                'system'
+              );
+            }
+
+          } catch (err) {
+            hideTyping();
+            console.error('CodeGuru API error:', err);
+
+            // Show helpful error message
+            if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+              addMessage('ai',
+                '⚠️ Cannot connect to backend server.\n\n' +
+                'Make sure your Python backend is running:\n' +
+                '`python main.py`\n\n' +
+                'Then refresh this page.',
+                'system'
+              );
+            } else {
+              addMessage('ai',
+                `Something went wrong: ${err.message}\n\nPlease try again!`,
+                'system'
+              );
+            }
+          }
+        }
+
+        // ── Quick action buttons in editor toolbar ─────────────────
+        async function runQuickAction(action) {
+          const code = document.getElementById('codeInput')?.value || '';
+          if (!code.trim()) {
+            addMessage('ai', 'Please write or paste some code first, then click this button! 📝', 'system');
+            return;
+          }
+
+          const actionMessages = {
+            debug: 'Please debug my code and explain all errors.',
+            explain: 'Please explain what my code does.',
+          };
+
+          // Set the mode automatically
+          const modeBtns = document.querySelectorAll('.mode-pill');
+          modeBtns.forEach(b => {
+            b.classList.toggle('active', b.textContent.trim().toLowerCase() === action);
+          });
+          currentMode = action;
+          document.getElementById('modeLabel').textContent = `// mode: ${action.charAt(0).toUpperCase() + action.slice(1)}`;
+
+          // Put action in input and send
+          document.getElementById('aiInput').value = actionMessages[action];
+          await sendMsg();
+        }
+
+        function handleEnter(e) { if (e.key === 'Enter') sendMsg(); }
+
+        function initHeatmap(realData = null) {
+          const container = document.getElementById('heatmapGrid');
+          if (!container) return;
+          container.innerHTML = '';
+
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          let totalCount = 0;
+          let activeDays = 0;
+
+          months.forEach((mName, mIdx) => {
+            const monthBlock = document.createElement('div');
+            monthBlock.className = 'lc-month-block';
+
+            const mLabel = document.createElement('div');
+            mLabel.className = 'lc-month-label';
+            mLabel.textContent = mName;
+            monthBlock.appendChild(mLabel);
+
+            const mGrid = document.createElement('div');
+            mGrid.className = 'lc-month-grid';
+
+            const daysInMonth = new Date(2025, mIdx + 1, 0).getDate();
+            for (let i = 0; i < daysInMonth; i++) {
+              const cell = document.createElement('div');
+              cell.className = 'lc-cell';
+
+              let count = 0;
+              if (realData) {
+                const dateKey = `2025-${String(mIdx + 1).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`;
+                count = realData[dateKey] || 0;
+              }
+
+              if (count > 0) {
+                activeDays++;
+                totalCount += count;
+                const level = Math.min(Math.floor(count / 2) + 1, 4);
+                cell.classList.add('l' + level);
+              }
+              mGrid.appendChild(cell);
+            }
+            monthBlock.appendChild(mGrid);
+            container.appendChild(monthBlock);
+          });
+
+          if (document.getElementById('totalSubmissions')) {
+            document.getElementById('totalSubmissions').textContent = totalCount;
+            document.getElementById('activeDays').textContent = activeDays;
+          }
+        }
+
+        function toggleDropdown(el) {
+          const group = el.closest('.nav-group');
+          const isOpen = group.classList.contains('open');
+          document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+          if (!isOpen) group.classList.add('open');
+        }
+
+        // Auth State
+        let authToken = localStorage.getItem('guru_token') || null;
+
+        async function handleAuth(type) {
+          const btn = document.getElementById(type + 'Btn');
+          const user = document.getElementById(type + 'User').value;
+          const pass = document.getElementById(type + 'Pass').value;
+          const email = type === 'signup' ? document.getElementById('signupEmail').value : null;
+
+          if (!user || !pass) { alert('Please fill in all fields'); return; }
+
+          btn.innerHTML = '⏳ Processing...';
+          try {
+            const body = type === 'signup' ? { username: user, email, password: pass } : { username: user, password: pass };
+            const res = await fetch(`${API_BASE}/api/auth/${type}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              let msg = data.detail;
+              if (Array.isArray(msg)) msg = msg.map(m => m.msg).join('\n');
+              throw new Error(msg || 'Auth failed');
+            }
+
+            authToken = data.access_token;
+            localStorage.setItem('guru_token', authToken);
+            localStorage.setItem('guru_user', data.username);
+
+            await syncDashboard();
+            show('editor'); // Redesign: Land on Editor, not Dashboard
+          } catch (e) {
+            alert(e.message);
+          } finally {
+            btn.innerHTML = type === 'login' ? 'Sign in →' : 'Create account →';
+          }
+        }
+
+        async function syncDashboard() {
+          if (!authToken) return;
+          try {
+            const res = await fetch(`${API_BASE}/api/user/profile`, {
+              headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            if (!res.ok) { logout(); return; }
+            const profile = await res.json();
+
+            document.querySelectorAll('.user-name').forEach(el => el.textContent = profile.username);
+            document.getElementById('userGreeting').textContent = `Namaste, ${profile.username} 👋`;
+
+            document.getElementById('profileName').textContent = profile.username;
+            document.getElementById('profileUsername').textContent = '@' + profile.username;
+            document.getElementById('dashboardBio').textContent = profile.bio || 'CodeGuru Student';
+
+            document.querySelectorAll('.avatar').forEach(el => el.textContent = profile.username.substring(0, 2).toUpperCase());
+
+            // Real Stats mapping
+            const solved = profile.solved_count || 0;
+            document.getElementById('solvedCount').textContent = solved;
+            document.getElementById('solvedCountSmall').textContent = solved;
+            document.getElementById('userStreak').textContent = profile.streak || 0;
+            document.getElementById('streakSmall').textContent = profile.streak || 0;
+
+            // Detailed stats (Zero for new users)
+            const easy = 0, med = 0, hard = 0;
+            document.getElementById('easyCount').textContent = easy;
+            document.getElementById('medCount').textContent = med;
+            document.getElementById('hardCount').textContent = hard;
+            document.getElementById('easyFill').style.width = '0%';
+            document.getElementById('medFill').style.width = '0%';
+            document.getElementById('hardFill').style.width = '0%';
+
+            // Streak Month naming (Professional)
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const curMonth = months[new Date().getMonth()];
+            document.querySelector('.dash-greeting p').textContent = `// Track your ${curMonth} progress. Ready to solve some problems?`;
+
+            const actRes = await fetch(`${API_BASE}/api/user/activity`, {
+              headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const activityData = await actRes.json();
+            initHeatmap(activityData);
+          } catch (e) {
+            console.error('Sync failed', e);
+          }
+        }
+
+        function logout() {
+          localStorage.removeItem('guru_token');
+          localStorage.removeItem('guru_user');
+          authToken = null;
+          location.reload();
+        }
+
+        async function submitFeedback() {
+          const msg = document.getElementById('feedbackText').value;
+          if (!msg) return;
+
+          const btn = document.getElementById('feedbackBtn');
+          btn.innerHTML = '⏳ Sending...';
+          try {
+            await fetch(`${API_BASE}/api/feedback`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authToken ? `Bearer ${authToken}` : ''
+              },
+              body: JSON.stringify({ message: msg })
+            });
+            document.getElementById('feedbackText').value = '';
+            alert('Thank you for your feedback! 🙏');
+          } catch (e) {
+            alert('Feedback failed to send.');
+          } finally {
+            btn.innerHTML = 'Send Feedback →';
+          }
+        }
+
+        /* ── PRACTICE ── */
+        async function loadProblems(category) {
+          document.querySelectorAll('.filter-tabs .btn').forEach(b => {
+            b.classList.toggle('active', b.textContent === category);
+          });
+          const list = document.getElementById('problemList');
+          list.innerHTML = '<div style="color:var(--text3); font-family:var(--mono)">Loading problems...</div>';
+          try {
+            const res = await fetch(`${API_BASE}/api/practice/problems?category=${category}`);
+            const data = await res.json();
+            list.innerHTML = '';
+            data.forEach(p => {
+              const card = document.createElement('div');
+              card.className = 'problem-card';
+              card.onclick = () => loadProblem(p.id);
+              card.innerHTML = `
+                <div>
+                  <div style="font-weight:700; font-size:16px">${p.title}</div>
+                  <div style="font-size:12px; color:var(--text3); margin-top:4px">${p.category}</div>
+                </div>
+                <div class="diff-tag diff-${p.difficulty.toLowerCase()}">${p.difficulty}</div>
+              `;
+              list.appendChild(card);
+            });
+          } catch (e) { list.innerHTML = 'Failed to load problems.'; }
+        }
+
+        async function loadProblem(id) {
+          try {
+            const res = await fetch(`${API_BASE}/api/practice/problems/${id}`);
+            const p = await res.json();
+            show('editor');
+            const lang = document.getElementById('langSelect').value;
+            const code = p.starter_code[lang] || p.starter_code['Python'] || '';
+            document.getElementById('codeInput').value = code;
+            updateLines();
+            alert(`Loaded: ${p.title}\n\n${p.description}`);
+          } catch (e) { alert('Failed to load problem details.'); }
+        }
+
+        /* ── MOCK INTERVIEW ── */
+        let interviewStream = null;
+        async function startMockInterview() {
+          try {
+            interviewStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            document.getElementById('userVideo').srcObject = interviewStream;
+            
+            const chat = document.getElementById('interviewChat');
+            chat.innerHTML += '<div class="msg-ai"><div class="msg-bubble"><i>Starting session...</i></div></div>';
+            
+            const res = await fetch(`${API_BASE}/api/mock-interview/start`, {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({role: 'Software Engineer', company: 'General', stage: 'HR'})
+            });
+            const data = await res.json();
+            
+            chat.innerHTML = `
+              <div class="msg-ai">
+                <div class="msg-avatar">🤖</div>
+                <div class="msg-bubble">Great, I can see you. Let's begin. <br><br><b>${data.first_question}</b></div>
+              </div>
+            `;
+            
+            // Simulated suspicion detection via tab focus
+            document.addEventListener('visibilitychange', () => {
+              if (document.visibilityState === 'hidden' && document.getElementById('mock-interview').classList.contains('active')) {
+                document.getElementById('suspicionOverlay').style.display = 'flex';
+                setTimeout(() => { document.getElementById('suspicionOverlay').style.display = 'none'; }, 3000);
+              }
+            });
+
+          } catch (e) {
+            alert('Camera permission denied or not available.');
+          }
+        }
+
+        /* ── SYLLABUS ── */
+        async function loadUniversities() {
+          const sel = document.getElementById('uniSelect');
+          if (sel.options.length > 1) return;
+          try {
+            const res = await fetch(`${API_BASE}/api/syllabus/universities`);
+            const unis = await res.json();
+            unis.forEach(u => {
+              const opt = document.createElement('option');
+              opt.value = u; opt.textContent = u;
+              sel.appendChild(opt);
+            });
+          } catch (e) {}
+        }
+
+        async function loadUniversitySyllabus() {
+          const uni = document.getElementById('uniSelect').value;
+          if (!uni) return;
+          const grid = document.getElementById('syllabusGrid');
+          grid.innerHTML = '<div style="color:var(--text3)">Loading curriculum...</div>';
+          try {
+            const res = await fetch(`${API_BASE}/api/syllabus/${uni}`);
+            const data = await res.json();
+            grid.innerHTML = '';
+            const cs = data["Computer Science"];
+            for (let year in cs) {
+              const card = document.createElement('div');
+              card.className = 'syllabus-card';
+              card.innerHTML = `<h3 style="margin-bottom:16px; color:var(--accent)">${year}</h3>`;
+              cs[year].forEach(subj => {
+                card.innerHTML += `<div class="syllabus-item">📘 ${subj}</div>`;
+              });
+              grid.appendChild(card);
+            }
+          } catch (e) { grid.innerHTML = 'Failed to load syllabus.'; }
+        }
+
+        /* ── STUDY ROOMS ── */
+        async function joinRoom() {
+          const code = document.getElementById('roomCodeInput').value.trim();
+          if (!code) { alert('Please enter a room code.'); return; }
+          const user = localStorage.getItem('guru_user') || 'Anonymous';
+          try {
+            const res = await fetch(`${API_BASE}/api/rooms/${code}/join?user=${user}`, {method: 'POST'});
+            if (!res.ok) { alert('Room not found.'); return; }
+            const data = await res.json();
+            const grid = document.getElementById('roomGrid');
+            grid.innerHTML = `
+              <div class="room-card" style="grid-column: 1/-1">
+                <div style="font-weight:700">Joined Room <span class="room-code">${code}</span></div>
+                <p style="color:var(--text3); font-size:13px; margin:16px 0">Members: ${data.members.join(', ')}</p>
+                <button class="btn btn-primary" onclick="show('editor')">Enter Room Editor</button>
+              </div>
+            `;
+          } catch (e) { alert('Failed to join room.'); }
+        }
+        async function createRoom() {
+          const user = localStorage.getItem('guru_user') || 'Anonymous';
+          try {
+            const res = await fetch(`${API_BASE}/api/rooms/create?owner=${user}`, {method: 'POST'});
+            const data = await res.json();
+            const grid = document.getElementById('roomGrid');
+            grid.innerHTML = `
+              <div class="room-card" style="grid-column: 1/-1">
+                <div style="font-weight:700">Your Private Room is Ready</div>
+                <div class="room-code">${data.room_id}</div>
+                <p style="color:var(--text3); font-size:13px">Share this code with your friends to study together.</p>
+                <button class="btn btn-primary" style="margin-top:20px" onclick="show('editor')">Enter Room Editor</button>
+              </div>
+            `;
+          } catch (e) { alert('Failed to create room.'); }
+        }
+
+        /* ── COMPANY PREP ── */
+        async function loadCompanies() {
+          const grid = document.getElementById('companyGrid');
+          grid.innerHTML = '<div style="color:var(--text3)">Loading companies...</div>';
+          try {
+            const res = await fetch(`${API_BASE}/api/company/list`);
+            const companies = await res.json();
+            grid.innerHTML = '';
+            companies.forEach(name => {
+              const card = document.createElement('div');
+              card.className = 'company-card';
+              card.onclick = () => loadCompanyPrep(name);
+              card.innerHTML = `
+                <div class="company-logo">${name === 'Amazon' ? '📦' : '🏢'}</div>
+                <div style="font-weight:800; font-size:18px">${name}</div>
+                <div style="color:var(--text3); font-size:12px; margin-top:8px">View Prep Pattern</div>
+              `;
+              grid.appendChild(card);
+            });
+          } catch (e) { grid.innerHTML = 'Failed to load companies.'; }
+        }
+
+        async function loadCompanyPrep(name) {
+          try {
+            const res = await fetch(`${API_BASE}/api/company/${name}`);
+            const data = await res.json();
+            let roundsHtml = data.rounds.map(r => `
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border)">
+                <span>${r.name}</span>
+                <span style="color:var(--accent); font-family:var(--mono)">${r.duration || r.name_type || ''}</span>
+              </div>
+            `).join('');
+            
+            const grid = document.getElementById('companyGrid');
+            grid.innerHTML = `
+              <div class="dash-card" style="grid-column: 1/-1; text-align:left">
+                <button class="btn btn-ghost" onclick="loadCompanies()" style="margin-bottom:20px">← Back</button>
+                <h2 style="font-size:32px; font-weight:800">${name} Prep Pattern</h2>
+                <p style="color:var(--text3); margin-bottom:32px">${data.pattern}</p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:40px">
+                  <div>
+                    <h3 style="margin-bottom:16px">Interview Rounds</h3>
+                    ${roundsHtml}
+                  </div>
+                  <div>
+                    <h3 style="margin-bottom:16px">Top Questions</h3>
+                    ${data.common_questions.map(q => `<div class="syllabus-item">❓ ${q}</div>`).join('')}
+                  </div>
+                </div>
+              </div>
+            `;
+          } catch (e) { alert('Failed to load company data.'); }
+        }
+
+        // Mobile sidebar toggle
+        function toggleMobileSidebar() {
+          const sidebar = document.getElementById('mainSidebar');
+          const overlay = document.getElementById('mobileSidebarOverlay');
+          sidebar.classList.toggle('mobile-show');
+          overlay.classList.toggle('show');
+        }
+
+        // Check auth on load
+        if (authToken) syncDashboard();
+        else initHeatmap();
+      </script>
+</body>
+
+</html>
