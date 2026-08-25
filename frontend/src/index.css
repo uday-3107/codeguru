@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+    /* ── LIGHT "Warm Paper" theme — default for app pages ── */
+    --font-sans: "Inter", sans-serif;
+    --font-header: "Geist", "Inter", sans-serif;
+    --font-mono: "Geist Mono", "JetBrains Mono", monospace;
+
+    --color-base: #faf9f5;
+    --color-surface: #ffffff;
+    --color-elevated: #f4f2ec;
+    --color-surface3: #eceae2;
+    --color-input: #ffffff;
+    --color-border-subtle: #e9e6dd;
+    --color-border-strong: #dbd7cb;
+    --color-primary-text: #35322a;
+    --color-secondary-text: #68644f;
+    --color-muted: #a09a87;
+    --color-accent: #6250e0;
+    --color-accent2: #5343c9;
+    --color-accent-glow: rgba(98, 80, 224, 0.08);
+    --color-success: #0e8a68;
+    --color-warning: #a16207;
+    --color-error: #d13438;
+
+    /* Shadows */
+    --shadow-card: 0 1px 2px rgba(53, 50, 42, 0.05), 0 4px 16px rgba(53, 50, 42, 0.05);
+    --shadow-card-hover: 0 2px 4px rgba(53, 50, 42, 0.06), 0 12px 32px rgba(53, 50, 42, 0.1);
+}
+
+/* ── DARK theme — scoped to .theme-dark (landing page, code panels) ── */
+.theme-dark {
+    --color-base: #0a0a0f;
+    --color-surface: #111118;
+    --color-elevated: #18181f;
+    --color-surface3: #22222c;
+    --color-input: #12151d;
+    --color-border-subtle: rgba(255, 255, 255, 0.08);
+    --color-border-strong: rgba(255, 255, 255, 0.12);
+    --color-primary-text: #e8e8f0;
+    --color-secondary-text: #a0a0b8;
+    --color-muted: #6a6a8a;
+    --color-accent: #7c6aff;
+    --color-accent2: #a78bfa;
+    --color-accent-glow: rgba(124, 106, 255, 0.3);
+    --color-success: #22d3a0;
+    --color-warning: #f59e0b;
+    --color-error: #f87171;
+
+    --shadow-card: none;
+    --shadow-card-hover: none;
+}
+
+body {
+    background-color: var(--color-base);
+    color: var(--color-primary-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Light-theme scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 99px;
+    border: 3px solid var(--color-base);
+}
+
+::selection {
+    background: var(--color-accent-glow);
+}
+
+/* Floating glow blobs - dark landing effect */
+.blob {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
+    animation: float 20s infinite alternate ease-in-out;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(80px, -60px) scale(1.2);
+    }
+}

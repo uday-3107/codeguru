@@ -41,9 +41,12 @@ codeguru.db
 *.sqlite3-journal
 
 # ── Node / frontend (React SPA lives in frontend/) ────────────
+# NOTE: package-lock.json and package.json MUST be committed
 node_modules/
-frontend/dist/
 .vite/
+.eslintcache
+.vercel/
+coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

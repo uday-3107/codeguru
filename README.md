@@ -1,8 +1,10 @@
 # CodeGuru
 
-**An AI-powered coding teacher backend built for Indian CS students.**
+**An AI-powered coding teacher for Indian CS students — FastAPI backend + React frontend.**
 
 CodeGuru answers programming doubts in the student's own language (Hindi, Telugu, Tamil, Hinglish, English), explains and debugs code, generates examples, executes student code, hosts collaborative study rooms, and runs AI mock interviews — all backed by a multi-provider AI engine with automatic failover so a single rate limit never breaks the experience.
+
+The app ships as two packages: a cleanly layered **FastAPI API** (`app/`) and a **React + Vite + TypeScript SPA** (`frontend/`) with a dark marketing landing page and a warm, light in-app theme.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-green)
@@ -42,6 +44,7 @@ CodeGuru answers programming doubts in the student's own language (Hindi, Telugu
 | **Company Placement Prep** | Hiring patterns and commonly asked questions for TCS, Infosys, Wipro, Amazon |
 | **Study Rooms** | Persistent collaborative coding rooms with member management (SQLite-backed) |
 | **Mock Interviews** | AI-generated interview questions with answer evaluation and scoring |
+| **Modern Web App** | React + Vite SPA: dark landing page, warm light app theme, code editor with AI tutor panel, activity heatmaps |
 
 ---
 
@@ -130,7 +133,16 @@ codeguru/
 │   ├── check_models.py       # Lists available models across all providers
 │   └── test_gemini.py        # Quick Gemini connectivity test
 ├── static/
-│   └── index.html            # Minimal frontend served at /
+│   └── index.html            # Legacy single-file frontend (reference only)
+├── frontend/                 # React + Vite + TypeScript SPA
+│   ├── src/
+│   │   ├── App.tsx           # Router (public pages + shell pages)
+│   │   ├── index.css         # Tailwind v4 tokens: light theme default, .theme-dark scope
+│   │   ├── lib/api.ts        # Typed API client with JWT handling
+│   │   ├── components/       # AppShell (sidebar), shared UI primitives
+│   │   └── pages/            # Landing, Login, Chat, Practice, Syllabus, Rooms,
+│   │                         #   Company, Interview, Profile
+│   └── vite.config.ts        # Dev proxy: /api -> localhost:8000
 ├── .env.example              # Environment variable template
 ├── prd.md                    # Product requirements document
 ├── architecture.md           # System design and architecture
@@ -154,6 +166,9 @@ codeguru/
 | HTTP Client | httpx (async) |
 | Config | python-dotenv |
 | AI Providers | Groq, Google Gemini, Cerebras, Mistral, OpenRouter |
+| Frontend | React 18 + Vite + TypeScript |
+| Styling | Tailwind CSS v4 + design tokens (dark landing / light app) |
+| Icons & Markdown | lucide-react, react-markdown (planned), CodeMirror 6 (planned) |
 
 ---
 
@@ -187,17 +202,24 @@ codeguru/
 
    Then edit `.env` and add your keys.
 
-4. Start the server:
+4. Start the backend:
 
    ```bash
    uvicorn app.main:app --reload
    ```
 
-5. Open the app:
+5. In a second terminal, start the frontend:
 
-   - Web UI: <http://localhost:8000>
-   - Interactive API docs (Swagger): <http://localhost:8000/docs>
-   - Alternative docs (ReDoc): <http://localhost:8000/redoc>
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+6. Open the app:
+
+   - Web app: <http://localhost:5173> (React SPA, proxies `/api` to the backend)
+   - API docs (Swagger): <http://localhost:8000/docs>
 
 Database tables are created automatically on first start (`codeguru.db` at the project root).
 
@@ -380,9 +402,9 @@ Note: the free tier provides a single worker; the code-execution sandbox (`/api/
 
 The full phased build plan lives in [phases.md](phases.md). Highlights:
 
-- [ ] React + Vite SPA frontend (app shell, chat experience, learning features)
-- [ ] Multi-agent orchestration layer (8 agents: orchestrator, explainer, debugger, and more)
+- [x] React + Vite SPA frontend (landing, auth, chat, practice, syllabus, rooms, company, interview, profile)
 - [ ] Streaming responses (SSE) and session memory
+- [ ] Multi-agent orchestration layer (8 agents: orchestrator, explainer, debugger, and more)
 - [ ] Automated test suite (pytest + TestClient)
 - [ ] Alembic migrations instead of `create_all()`
 - [ ] Sandboxed code execution service
