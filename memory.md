@@ -51,7 +51,7 @@ codeguru/
 ├── frontend/
 │   ├── src/
 │   │   ├── App.tsx           # Router: public (/ , /login) + shell pages
-│   │   ├── index.css         # Tailwind v4 @theme tokens (light default + .theme-dark scope)
+│   │   ├── index.css         # Tailwind v4 @theme tokens (all-dark)
 │   │   ├── lib/api.ts        # fetch client, JWT storage (guru_token/guru_user keys)
 │   │   ├── components/       # AppShell.tsx (sidebar), ui.tsx (Card/Button/inputs)
 │   │   └── pages/            # Landing, Login, Chat, Practice, Syllabus, Rooms,
@@ -99,10 +99,8 @@ cd frontend && npm run dev    # http://localhost:5173, proxies /api -> :8000
 
 ### Theme system (design decision - locked)
 
-- **Dark landing + light app.** One token system in `index.css`.
-- Default tokens = light "Warm Paper" (Claude-style): bg `#faf9f5`, white cards, warm-brown text `#35322a`, accent `#6250e0`.
-- `.theme-dark` class re-scopes all variables to the dark landing palette (bg `#0a0a0f`, accent `#7c6aff`).
-- Landing page + code editor panels carry `.theme-dark`; everything else inherits light.
+- **All-dark.** One token system in `index.css` (bg `#0a0a0f`, surface `#111118`, accent `#7c6aff`).
+- Landing and every app page share the same dark palette with violet glows and blurred blobs.
 - Fonts: Inter (UI), Geist (headings), Geist Mono/JetBrains Mono (code).
 
 ---
@@ -153,7 +151,8 @@ AI modes: chat, explain, debug, generate, socratic. Languages: english, hindi, t
 2. **Emoji purge** - removed from all Python code, logs, API responses; replaced landing feature icons with lucide-react.
 3. **Docs authored** - prd/architecture/rules/phases/design markdown files; professional README; expanded .gitignore.
 4. **Frontend built from scratch** - Vite+React+TS scaffold, Tailwind v4, tokens, dark landing ported 1:1 from legacy HTML, then all 9 app pages built and wired to real backend via Vite proxy.
-5. **Theme finalized** - user rejected all-dark; locked "dark landing + Warm Paper light app" split; polished light theme (solid cards, layered shadows, themed scrollbar/selection, removed muddy blobs behind light UI).
+5. **Theme iterations** - explored Warm Paper light app split (dark landing + light app); reverted to all-dark per final decision — entire app now unified dark with glass cards and violet glows.
+6. **Git hygiene** - updated README for full-stack, .gitignore expanded for frontend caches (eslint, vercel, coverage), docs linked.
 
 ### Earlier sessions
 - API keys moved from hardcoded `config/keys.py` to `.env`
@@ -186,8 +185,7 @@ AI modes: chat, explain, debug, generate, socratic. Languages: english, hindi, t
 
 ## Next Steps (per phases.md)
 
-1. Polish pass on light theme based on usage feedback
-2. SSE streaming endpoint (`/api/chat/stream`) + frontend consumption
+1. SSE streaming endpoint (`/api/chat/stream`) + frontend consumption
 3. Session/conversation persistence
 4. Agent foundation (Phase 5): refactor `ask_ai()` -> `llm_call()` primitive + orchestrator
 5. More practice problems + real syllabus data pipeline

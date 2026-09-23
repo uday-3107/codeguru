@@ -54,7 +54,7 @@ const langPills = [
 
 export default function Landing() {
   return (
-    <div className="theme-dark relative min-h-screen overflow-x-hidden bg-base text-primary-text">
+    <div className="relative min-h-screen overflow-x-hidden bg-base text-primary-text">
       {/* Animated background - same as static page */}
       <div
         style={{

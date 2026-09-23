@@ -108,7 +108,7 @@ export default function Company() {
                   className="cursor-pointer p-8 text-center"
                 >
                   <button onClick={() => open(name)} className="group w-full cursor-pointer">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-accent/20 bg-accent/10 font-header text-xl font-extrabold text-accent2">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border-strong bg-gradient-to-br from-white/[0.08] to-transparent font-header text-xl font-extrabold text-accent2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
                       {name.charAt(0)}
                     </div>
                     <div className="mt-4 font-header text-lg font-bold text-primary-text">{name}</div>

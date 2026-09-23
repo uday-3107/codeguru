@@ -147,8 +147,8 @@ export default function Chat() {
       </div>
 
       <div className="flex min-h-0 flex-1">
-        {/* ── CODE PANEL (stays dark - embedded IDE look) ── */}
-        <div className="theme-dark flex w-1/2 min-w-0 flex-col border-r border-border-subtle bg-surface">
+        {/* ── CODE PANEL ── */}
+        <div className="flex w-1/2 min-w-0 flex-col border-r border-border-subtle bg-surface/70 backdrop-blur-sm">
           <div className="relative flex-1 overflow-hidden">
             <div className="pointer-events-none absolute inset-y-0 left-0 w-10 select-none border-r border-border-subtle bg-surface/40 pt-4 text-right font-mono text-xs leading-6 text-muted">
               {Array.from({ length: lineCount }, (_, i) => (
@@ -189,7 +189,7 @@ export default function Chat() {
           )}
 
           {/* actions */}
-          <div className="flex items-center gap-3 border-t border-border-subtle bg-surface/60 px-4 py-2.5 backdrop-blur">
+          <div className="flex items-center gap-3 border-t border-border-subtle bg-surface px-4 py-2.5">
             <Button variant="green" size="sm" onClick={runCode} loading={running}>
               {!running && <Play size={13} />} Run
             </Button>
@@ -213,8 +213,8 @@ export default function Chat() {
         </div>
 
         {/* ── AI PANEL ── */}
-        <div className="flex w-1/2 min-w-0 flex-col bg-base">
-          <div className="flex items-center gap-2 border-b border-border-subtle bg-surface px-4 py-2.5">
+        <div className="flex w-1/2 min-w-0 flex-col bg-surface/30">
+          <div className="flex items-center gap-2 border-b border-border-subtle bg-surface/60 px-4 py-2.5 backdrop-blur">
             <Sparkles size={15} className="text-accent2" />
             <span className="font-header text-sm font-bold text-primary-text">CodeGuru AI</span>
 
@@ -241,8 +241,8 @@ export default function Chat() {
                   key={i}
                   className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
                     m.role === 'user'
-                      ? 'rounded-tr-sm border border-accent/30 bg-accent-glow text-primary-text'
-                      : 'rounded-tl-sm border border-border-subtle bg-surface shadow-[var(--shadow-card)]'
+                      ? 'rounded-tr-sm border border-accent/25 bg-accent-glow text-primary-text'
+                      : 'rounded-tl-sm border border-border-subtle bg-elevated text-primary-text'
                   }`}
                 >
                   {m.role === 'ai' && m.provider && (
@@ -257,7 +257,7 @@ export default function Chat() {
 
             {thinking && (
               <div className="flex justify-start">
-                <div className="rounded-xl rounded-tl-sm border border-border-subtle bg-surface px-3.5 py-2.5 font-mono text-xs italic text-muted shadow-[var(--shadow-card)]">
+                <div className="rounded-xl rounded-tl-sm border border-border-subtle bg-elevated px-3.5 py-2.5 font-mono text-xs italic text-muted">
                   CodeGuru is thinking...
                 </div>
               </div>
@@ -266,7 +266,7 @@ export default function Chat() {
           </div>
 
           {/* input */}
-          <div className="flex gap-2.5 border-t border-border-subtle bg-surface p-3">
+          <div className="flex gap-2.5 border-t border-border-subtle bg-surface/60 p-3 backdrop-blur">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}

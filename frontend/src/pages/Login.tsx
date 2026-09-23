@@ -43,15 +43,15 @@ export default function Login() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-base p-6">
       {/* ambient glow */}
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-accent/[0.07] blur-[100px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[420px] w-[420px] rounded-full bg-success/[0.05] blur-[100px]" />
+      <div className="pointer-events-none absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-accent2/10 blur-[120px]" />
 
-      <div className="relative w-full max-w-[420px]">
+      <div className="w-full max-w-[420px]">
         <Link to="/" className="mb-8 block text-center font-mono text-xl font-bold tracking-tight text-primary-text">
           Code<span className="text-accent">Guru</span>
         </Link>
 
-        <div className="rounded-3xl border border-border-subtle bg-surface p-10 shadow-[var(--shadow-card-hover)]">
+        <div className="rounded-3xl border border-border-strong bg-surface/80 p-10 shadow-[0_32px_64px_rgba(0,0,0,0.5)] backdrop-blur-md">
           {/* tabs */}
           <div className="mb-7 grid grid-cols-2 gap-1 rounded-xl bg-elevated p-1">
             {(['login', 'signup'] as Tab[]).map((t) => (
